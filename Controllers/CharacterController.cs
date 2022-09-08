@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using loginwithauthentication.Models;
 using loginwithauthentication.Services.CharacterService;
 using loginwithauthentication.Dtos.CharacterDto;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace loginwithauthentication.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CharacterController : ControllerBase
@@ -30,7 +33,8 @@ namespace loginwithauthentication.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _characterService.GetAllCharacters());
+            int userId = int.Parse(User.Claims.FirstOrDefault(c=> c.Type == ClaimTypes.NameIdentifier).Value);
+            return Ok(await _characterService.GetAllCharacters(userId));
         }
 
         [HttpPost("AddCharacter")]
